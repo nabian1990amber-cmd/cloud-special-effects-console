@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>云端特效 - 腾讯云直播控制台</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      font-size: 13px;
+    }
+
+    /* ========== 顶部导航栏 ========== */
+    .top-nav {
+      height: 50px;
+      background: #fff;
+      border-bottom: 1px solid #e5e5e5;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+    }
+    .top-nav .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #0052d9;
+      margin-right: 24px;
+    }
+    .top-nav .logo-area svg { width: 24px; height: 24px; }
+    .top-nav .nav-links {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+    }
+    .top-nav .nav-links a {
+      color: #666;
+      text-decoration: none;
+      font-size: 13px;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .top-nav .nav-links a:hover { background: #f5f5f5; }
+    .top-nav .nav-links a.active { color: #0052d9; font-weight: 500; }
+    .top-nav .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .top-nav .nav-right .badge {
+      background: #e8f0fe;
+      color: #0052d9;
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .top-nav .nav-right .avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #0052d9; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 500;
+    }
+
+    /* ========== 左侧边栏 ========== */
+    .sidebar {
+      position: fixed;
+      top: 50px; left: 0; bottom: 0;
+      width: 200px;
+      background: #fff;
+      border-right: 1px solid #e5e5e5;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .sidebar .product-name {
+      padding: 16px 16px 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    .sidebar .menu-group { margin-bottom: 8px; }
+    .sidebar .menu-group-title {
+      padding: 8px 16px;
+      font-size: 12px;
+      color: #999;
+      font-weight: 500;
+    }
+    .sidebar .menu-item {
+      padding: 9px 16px 9px 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      color: #555;
+      font-size: 13px;
+      position: relative;
+    }
+    .sidebar .menu-item:hover { background: #f5f7fa; }
+    .sidebar .menu-item.active {
+      background: #f0f5ff;
+      color: #0052d9;
+      font-weight: 500;
+    }
+    .sidebar .menu-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: #0052d9;
+    }
+    .sidebar .menu-item .menu-icon {
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .sidebar .collapse-btn {
+      padding: 12px 16px;
+      color: #999;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-top: 1px solid #f0f0f0;
+      margin-top: 8px;
+    }
+
+    /* ========== 主内容区 ========== */
+    .main-content {
+      margin-left: 200px;
+      margin-top: 50px;
+      padding: 20px 24px;
+      min-height: calc(100vh - 50px);
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+    }
+
+    /* 头部信息卡片 */
+    .info-card {
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid #e8e8e8;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .info-card .info-left {}
+    .info-card .info-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    .info-card .info-desc {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    .info-card .info-links a {
+      color: #0052d9;
+      text-decoration: none;
+      font-size: 12px;
+      margin-right: 16px;
+    }
+    .info-card .info-links a:hover { text-decoration: underline; }
+    .info-card .info-right {}
+    .info-card .demo-img {
+      width: 180px;
+      height: 100px;
+      border-radius: 6px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #bbb;
+      font-size: 12px;
+      object-fit: cover;
+    }
+
+    /* 操作按钮组 */
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .action-btn-wensheng {
+      padding: 6px 20px;
+      font-size: 13px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid #0052d9;
+      background: #0052d9;
+      color: #fff;
+      transition: opacity 0.2s;
+    }
+    .action-btn-wensheng:hover { opacity: 0.85; }
+    .action-btn-other {
+      padding: 6px 20px;
+      font-size: 13px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid #d9d9d9;
+      background: #fff;
+      color: #555;
+      transition: all 0.2s;
+    }
+    .action-btn-other:hover {
+      border-color: #0052d9;
+      color: #0052d9;
+    }
+
+    /* 表格 */
+    .table-wrap {
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid #e8e8e8;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th {
+      background: #fafafa;
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 500;
+      color: #666;
+      border-bottom: 1px solid #f0f0f0;
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
+      color: #333;
+      vertical-align: middle;
+    }
+    tbody tr:hover { background: #fafafa; }
+    .thumb-cell {
+      width: 80px;
+      height: 60px;
+      border-radius: 4px;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ccc;
+      font-size: 11px;
+      object-fit: cover;
+      overflow: hidden;
+    }
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #2ba471;
+      font-size: 13px;
+    }
+    .status-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #2ba471;
+    }
+    .action-links a {
+      color: #0052d9;
+      text-decoration: none;
+      font-size: 13px;
+      margin-right: 12px;
+    }
+    .action-links a.danger { color: #d54941; }
+
+    /* ========== 惩罚特效弹窗 ========== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-punishment {
+      background: #fff;
+      border-radius: 8px;
+      width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .modal-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    .modal-close {
+      width: 32px; height: 32px;
+      border: none; background: none;
+      cursor: pointer; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      color: #888; font-size: 16px;
+    }
+    .modal-close:hover { background: #f5f5f5; color: #333; }
+    .modal-body { padding: 20px 24px 16px; flex: 1; }
+
+    /* 特效选择 */
+    .effect-select-label {
+      font-size: 13px; color: #333;
+      margin-bottom: 10px; font-weight: 500;
+    }
+    .effect-grid {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .effect-thumb {
+      width: 90px; height: 90px;
+      border: 2px solid #e8e8e8;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fafafa;
+      gap: 5px;
+      position: relative;
+    }
+    .effect-thumb:hover { border-color: #a8c6fd; }
+    .effect-thumb.playing {
+      border-color: #0052d9;
+      background: #f0f5ff;
+    }
+    .effect-thumb .thumb-icon {
+      font-size: 26px; line-height: 1;
+      transition: transform 0.3s;
+    }
+    .effect-thumb.playing .thumb-icon {
+      transform: scale(1.2);
+    }
+    .effect-thumb .thumb-name {
+      font-size: 12px; color: #555;
+    }
+
+    /* 预览区 */
+    .preview-section { margin-bottom: 10px; }
+    .preview-label {
+      font-size: 12px; color: #999;
+      margin-bottom: 6px;
+    }
+    .preview-box {
+      width: 100%;
+      height: 280px;
+      border: 1px solid #e8e8e8;
+      border-radius: 8px;
+      background: #f8f8f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .preview-box .preview-placeholder {
+      color: #bbb; font-size: 14px;
+    }
+    .scroll-text-bar {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 13px;
+      padding: 5px 18px;
+      border-radius: 16px;
+      white-space: nowrap;
+      animation: fadeInOut 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+    .uploaded-photo-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 2;
+    }
+    .uploaded-photo-thumb {
+      width: 44px; height: 44px;
+      border-radius: 6px;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      object-fit: cover;
+      background: #eee;
+    }
+    .replace-photo-btn {
+      font-size: 11px;
+      color: #0052d9;
+      cursor: pointer;
+      background: rgba(255,255,255,0.92);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: none;
+      white-space: nowrap;
+    }
+    .replace-photo-btn:hover { background: #fff; }
+
+    /* 预览区预置效果占位 */
+    .preview-effect-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #ccc;
+      font-size: 13px;
+    }
+    .preview-effect-placeholder .effect-icon {
+      font-size: 48px;
+      opacity: 0.4;
+    }
+
+    .effect-name-display {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px 24px;
+    }
+    .btn-primary-blue {
+      background: #0052d9;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 9px 36px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary-blue:hover { background: #003fae; }
+    .hidden-file-input { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ========== 顶部导航栏 ========== -->
+  <div class="top-nav">
+    <div class="logo-area">
+      <!-- 腾讯云 Logo -->
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/></svg>
+      腾讯云
+    </div>
+    <div class="nav-links">
+      <a href="#">控制台</a>
+      <a href="#" class="active">云直播</a>
+      <a href="#">云点播</a>
+      <a href="#">媒体处理</a>
+      <a href="#">对象存储</a>
+      <a href="#">内容分发网络 CDN</a>
+      <a href="#">...</a>
+    </div>
+    <div class="nav-right">
+      <span style="color:#888;font-size:12px;">支持通过实例ID、IP、名称等搜</span>
+      <span class="badge">99+</span>
+      <span style="color:#888;font-size:12px;">刘根妹 主账号</span>
+      <div class="avatar">刘</div>
+    </div>
+  </div>
+
+  <!-- ========== 左侧边栏 ========== -->
+  <div class="sidebar">
+    <div class="product-name">云直播</div>
+    <div class="menu-group">
+      <div class="menu-item"><span class="menu-icon">📊</span> 概览</div>
+      <div class="menu-item"><span class="menu-icon">🌐</span> 域名管理</div>
+      <div class="menu-item"><span class="menu-icon">📡</span> 流管理</div>
+      <div class="menu-item"><span class="menu-icon">📦</span> 资源包/插件管理</div>
+    </div>
+    <div class="menu-group">
+      <div class="menu-group-title">AI+</div>
+      <div class="menu-item"><span class="menu-icon">🤖</span> AI 智能</div>
+      <div class="menu-item"><span class="menu-icon">📝</span> 字幕&amp;同传</div>
+      <div class="menu-item"><span class="menu-icon">✂️</span> 高光切片</div>
+      <div class="menu-item"><span class="menu-icon">📄</span> 智能摘要</div>
+      <div class="menu-item"><span class="menu-icon">🔇</span> 音源擦除</div>
+      <div class="menu-item"><span class="menu-icon">🎬</span> 动效贴片</div>
+      <div class="menu-item"><span class="menu-icon">📱</span> 模转竖</div>
+      <div class="menu-item active"><span class="menu-icon">✨</span> 云端特效</div>
+      <div class="menu-item"><span class="menu-icon">🎥</span> AIGC直播</div>
+    </div>
+    <div class="menu-group">
+      <div class="menu-group-title">直播+</div>
+      <div class="menu-item"><span class="menu-icon">⚙️</span> 功能配置</div>
+      <div class="menu-item"><span class="menu-icon">⚡</span> 快直播</div>
+      <div class="menu-item"><span class="menu-icon">🎛️</span> 云导播台</div>
+      <div class="menu-item"><span class="menu-icon">🔄</span> 拉流转推</div>
+    </div>
+    <div class="menu-group">
+      <div class="menu-group-title">数据中心</div>
+      <div class="menu-item"><span class="menu-icon">📈</span> 计费用量</div>
+      <div class="menu-item"><span class="menu-icon">📉</span> 业务监控</div>
+    </div>
+    <div class="collapse-btn">
+      <span>◀</span> 收起
+    </div>
+  </div>
+
+  <!-- ========== 主内容区 ========== -->
+  <div class="main-content">
+    <div class="page-title">云端特效</div>
+
+    <!-- 信息卡片 -->
+    <div class="info-card">
+      <div class="info-left">
+        <div class="info-title">云端特效</div>
+        <div class="info-desc">云端发送AI特效，可应用于直播间礼物特效的场景</div>
+        <div class="info-links">
+          <a href="#">Demo 体验 ↗</a>
+          <a href="#">操作指引 ↗</a>
+          <a href="#">计费说明 ↗</a>
+        </div>
+      </div>
+      <div class="info-right">
+        <div class="demo-img">直播效果图</div>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="action-buttons">
+      <button class="action-btn-wensheng" onclick="alert('文生特效功能')">文生特效</button>
+      <button class="action-btn-other" onclick="alert('合成定制功能')">合成定制</button>
+      <button class="action-btn-other" onclick="openPunishmentModal()">惩罚特效</button>
+    </div>
+
+    <!-- 表格 -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>特效视频预览图</th>
+            <th>关键词</th>
+            <th>状态</th>
+            <th>特效类型 ▼</th>
+            <th>创建时间 ▼</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1257</td>
+            <td><div class="thumb-cell">预览图</div></td>
+            <td>变身美队</td>
+            <td><span class="status-tag">已完成</span></td>
+            <td>自定义合成定制</td>
+            <td>2026-04-28 17:07:06</td>
+            <td class="action-links">
+              <a href="#">发送特效</a>
+              <a href="#" class="danger">删除</a>
+            </td>
+          </tr>
+          <tr>
+            <td>1256</td>
+            <td><div class="thumb-cell">预览图</div></td>
+            <td>女王登基</td>
+            <td><span class="status-tag">已完成</span></td>
+            <td>自定义合成定制</td>
+            <td>2026-04-28 17:06:52</td>
+            <td class="action-links">
+              <a href="#">发送特效</a>
+              <a href="#" class="danger">删除</a>
+            </td>
+          </tr>
+          <tr>
+            <td>1255</td>
+            <td><div class="thumb-cell">预览图</div></td>
+            <td>绿野仙踪</td>
+            <td><span class="status-tag">已完成</span></td>
+            <td>自定义合成定制</td>
+            <td>2026-04-28 17:06:34</td>
+            <td class="action-links">
+              <a href="#">发送特效</a>
+              <a href="#" class="danger">删除</a>
+            </td>
+          </tr>
+          <tr>
+            <td>1254</td>
+            <td><div class="thumb-cell">预览图</div></td>
+            <td>财神发红包</td>
+            <td><span class="status-tag">已完成</span></td>
+            <td>自定义合成定制</td>
+            <td>2026-04-28 17:20:13</td>
+            <td class="action-links">
+              <a href="#">发送特效</a>
+              <a href="#" class="danger">删除</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========== 惩罚特效弹窗 ========== -->
+  <div class="modal-overlay" id="punishmentModal">
+    <div class="modal-punishment">
+      <div class="modal-header">
+        <h3>惩罚特效</h3>
+        <button class="modal-close" onclick="closePunishmentModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="effect-select-label">选择特效</div>
+        <div class="effect-grid" id="effectGrid">
+          <div class="effect-thumb" data-effect="炸毛" onclick="playEffect(this)">
+            <span class="thumb-icon">🐱</span>
+            <span class="thumb-name">炸毛</span>
+          </div>
+          <div class="effect-thumb" data-effect="鼻血" onclick="playEffect(this)">
+            <span class="thumb-icon">😵</span>
+            <span class="thumb-name">鼻血</span>
+          </div>
+          <div class="effect-thumb" data-effect="黑脸" onclick="playEffect(this)">
+            <span class="thumb-icon">😐</span>
+            <span class="thumb-name">黑脸</span>
+          </div>
+          <div class="effect-thumb" data-effect="变丑" onclick="playEffect(this)">
+            <span class="thumb-icon">👹</span>
+            <span class="thumb-name">变丑</span>
+          </div>
+          <div class="effect-thumb" data-effect="大眼" onclick="playEffect(this)">
+            <span class="thumb-icon">🤪</span>
+            <span class="thumb-name">大眼</span>
+          </div>
+          <div class="effect-thumb" data-effect="哭脸" onclick="playEffect(this)">
+            <span class="thumb-icon">😢</span>
+            <span class="thumb-name">哭脸</span>
+          </div>
+        </div>
+
+        <div class="preview-section">
+          <div class="preview-label">效果预览</div>
+          <div class="preview-box" id="previewBox">
+            <!-- 始终显示预置效果占位，不受上传照片影响 -->
+            <div class="preview-effect-placeholder" id="previewEffect">
+              <span class="effect-icon" id="previewEffectIcon">🐱</span>
+              <span id="previewEffectText">预置效果预览</span>
+            </div>
+            <!-- 上传后：右上角照片缩略图 -->
+            <div class="uploaded-photo-badge" id="photoBadge" style="display:none;">
+              <img class="uploaded-photo-thumb" id="photoThumb" src="" alt="已上传" />
+              <button class="replace-photo-btn" onclick="triggerUpload()">替换照片</button>
+            </div>
+            <!-- 滚动文字 -->
+            <div class="scroll-text-bar" id="scrollText">直播场景送出后恶搞主播</div>
+          </div>
+        </div>
+
+        <div class="effect-name-display" id="effectNameDisplay">炸毛特效</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary-blue" id="modalFooterBtn" onclick="handleFooterBtn()">上传照片并制作</button>
+      </div>
+      <input type="file" accept="image/*" class="hidden-file-input" id="photoInput" onchange="handlePhotoUpload(event)" />
+    </div>
+  </div>
+
+  <script>
+    // 特效图标映射
+    const effectIcons = {
+      '炸毛': '🐱', '鼻血': '😵', '黑脸': '😐',
+      '变丑': '👹', '大眼': '🤪', '哭脸': '😢'
+    };
+
+    // 弹窗
+    function openPunishmentModal() {
+      document.getElementById('punishmentModal').classList.add('active');
+    }
+    function closePunishmentModal() {
+      document.getElementById('punishmentModal').classList.remove('active');
+      document.getElementById('photoBadge').style.display = 'none';
+      document.getElementById('photoThumb').src = '';
+      document.getElementById('modalFooterBtn').textContent = '上传照片并制作';
+      // 清除播放态
+      document.querySelectorAll('.effect-thumb').forEach(t => t.classList.remove('playing'));
+    }
+
+    // 点击特效小框：播放预览（闪烁高亮效果示意）
+    function playEffect(el) {
+      // 先清除其他播放态
+      document.querySelectorAll('.effect-thumb').forEach(t => t.classList.remove('playing'));
+      // 当前点击项加播放态
+      el.classList.add('playing');
+      const name = el.dataset.effect;
+      // 更新预览区图标和名称
+      document.getElementById('previewEffectIcon').textContent = effectIcons[name] || '✨';
+      document.getElementById('effectNameDisplay').textContent = name + '特效';
+      // 0.8秒后清除播放态（示意播放完）
+      setTimeout(() => {
+        el.classList.remove('playing');
+      }, 800);
+    }
+
+    // 底部按钮点击：未上传时触发上传，已上传时关闭弹窗
+    function handleFooterBtn() {
+      const badgeDisplay = document.getElementById('photoBadge').style.display;
+      if (badgeDisplay !== 'flex') {
+        triggerUpload();
+      } else {
+        closePunishmentModal();
+      }
+    }
+
+    function triggerUpload() {
+      document.getElementById('photoInput').click();
+    }
+
+    // 处理上传：只显示右上角缩略图，不改预览区，按钮文字变"生成惩罚特效"
+    function handlePhotoUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        document.getElementById('photoThumb').src = ev.target.result;
+        document.getElementById('photoBadge').style.display = 'flex';
+        document.getElementById('modalFooterBtn').textContent = '生成惩罚特效';
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+
+    document.getElementById('punishmentModal').addEventListener('click', function(e) {
+      if (e.target === this) closePunishmentModal();
+    });
+  </script>
+
+</body>
+</html>
